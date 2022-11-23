@@ -1,0 +1,92 @@
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Praias</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="text-center">
+      <h1>As mais belas praias</h1>
+    </div>
+    <br>
+    <br>
+    <h3>Cadastrar praia</h3>
+    <hr>
+    <div class="row g-3">
+      <div class="col-auto">
+        <input type="number" min="1" step="1" class="form-control" name="ranking" placeholder="Ranking" />
+      </div>
+      <div class="col-auto">
+        <input class="form-control" name="name" placeholder="Nome" />
+      </div>
+      <div class="col-auto">
+        <input class="form-control" name="state" placeholder="Estado" />
+      </div>
+      <button class="col-auto btn btn-primary" create>Cadastrar</button>
+    </div>
+    <br>
+    <br>
+    <h3>Lista das mais belas praias</h3>
+    <table class="table" id="beaches">
+      <thead>
+        <tr>
+          <th>Ranking</th>
+          <th>Nome</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="beachesRows"></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script>
+      const API = 'http://localhost/api/beaches'
+
+      const renderRows = beaches => {
+          let rows = beaches.map(beach => {
+              return $('<tr>')
+                  .append($('<td>').append(beach.ranking))
+                  .append($('<td>').append(beach.name))
+                  .append($('<td>').append(beach.state))
+          })
+          $('#beachesRows').html(rows)
+      }
+
+      const getBeaches = () => {
+          $.ajax({
+              url: API,
+              success: beaches => {
+                  renderRows(beaches)
+                  $('[ranking]').val('')
+                  $('[name]').val('')
+                  $('[state]').val('')
+              }
+          })
+      }
+
+      const createBeach = () => {
+          let ranking = $('[name=ranking]').val()
+          let name = $('[name=name]').val()
+          let state = $('[name=state]').val()
+          $.ajax({
+              method: 'POST',
+              url: API,
+              data: JSON.stringify({ ranking: ~~ranking, name, state }),
+              dataType: 'json',
+              contentType: 'application/json',
+              success: getBeaches
+          })
+      }
+
+      $(() => {
+        getBeaches()
+        $('[create]').click(createBeach)
+      })
+  </script>
+</body>
+
+</html>
